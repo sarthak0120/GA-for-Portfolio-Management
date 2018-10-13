@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import copy 
+import matplotlib.pyplot as plt
 
 
 class parameters:
@@ -84,30 +85,63 @@ def fitness(member, params):
 
     return (params.w1*tot_return + params.w2*tot_liquidity)/(params.w0*tot_risk + params.w3*tot_complexity)
 
-def selection(population):
+def selection(population, params, n):
     
+    fitness_list = []
+    for member in population:
+        fitness_list.append(fitness(member, params))
     
+    fitness_sum = 0
+    for item in fitness_list:
+        fitness_sum = fitness_sum + item
+    
+    probabilities = []
+    for item in fitness_list:
+        probabilities.append(item/fitness_sum)
+    
+    cumulative_prob = [0]
+    for i in range(len(fitness_list)):
+        cumulative_prob.append(probabilities[i] + cumulative_prob[len(cumulative_prob)-1])
+        
+    mating_pool = []
+    for i in range(n):
+        random_num = np.random.random()
+        for j in range(len(cumulative_prob)-1):
+            if (cumulative_prob[j]<random_num and cumulative_prob[j+1]>random_num):
+                mating_pool.append(population[j])
+    
+    return mating_pool, fitness_sum/len(population)
+        
+        
 def crossover(mating_pool):
+    
     temp_1 = np.random.randint(len(mating_pool))
     temp_2 = np.random.randint(len(mating_pool))
     
     parent_copy_1 = copy.deepcopy(mating_pool[temp_1])
     parent_copy_2 = copy.deepcopy(mating_pool[temp_2])
-    
+
+def mutate(mating_pool):
+    pass
+
 def run_ga():
     
     population, params = initialize()
-
+    avg_fitness_list = []
+    iteration_list = []
+    
     for i in range(1000):
-        fitness_list = []
-        avg_fitness = 0
-        for member in population:
-            mem_fitness = fitness(member, params)
-            fitness_list.append(mem_fitness)
-            avg_fitness = avg_fitness + mem_fitness
-        avg_fitness = avg_fitness/params.N
-        mating_pool = selection(population)
+        
+        mating_pool, avg_fitness = selection(population)
+        avg_fitness_list.append(avg_fitness)
+        iteration_list.append(i)
         
         if np.random.rand()<params.crossover_rate:
-            crossover(mating pool)
-    
+            crossover(mating_pool)
+        
+        if np.random.rand()<params.mutation_rate:
+            mutate(mating_pool)
+        
+        population = mating_pool
+        
+    plt.plot(avg_fitness_list, iteration_list)
