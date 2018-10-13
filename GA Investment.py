@@ -1,6 +1,6 @@
 import math
 import numpy as np
-import copy 
+#import copy 
 import matplotlib.pyplot as plt
 
 
@@ -8,7 +8,7 @@ class parameters:
     def __init__(self):
         self.mutation_rate  = 0.1
         self.crossover_rate = 0.5
-        self.N = 100
+        self.N = 20
         self.avenues = []
         self.avenues_params = []
         self.w0 = 1
@@ -28,6 +28,20 @@ def decimal_chromosome(bin_chromosome):
             dec = 0
     return dec_chromosome
 
+def binary_chromosome(decimal_chromosome):
+    
+    bin_chromosome = []
+    for number in decimal_chromosome:
+        binary_number = bin(number)
+        binary_number = binary_number[2:]
+        bin_list = []
+        for item in binary_number:
+            bin_list.append(int(item))
+        while not len(bin_list) == 10:
+            bin_list = [0] + bin_list
+        bin_chromosome.extend(bin_list)
+    return bin_chromosome
+
 def is_valid(member): 
     dec_sum  = 0
     dec_member = decimal_chromosome(member)
@@ -37,10 +51,22 @@ def is_valid(member):
     return dec_sum == 1023
 
 def cover():
-    member = [0 for i in range(50)]
-    while(not is_valid(member)):
-        member = [np.random.randint(2) for i in range(50)]
-    return member
+    num1 = np.random.randint(1024)
+    num2 = np.random.randint(1024- num1)
+    num3 = np.random.randint(1024 -num1 -num2)
+    num4 = np.random.randint(1024 -num1 -num2 -num3)
+    num5 = 1023 -num1 -num2 -num3 -num4
+    
+    dec_list = []
+    dec_list.append(num1)
+    dec_list.append(num2)
+    dec_list.append(num3)
+    dec_list.append(num4)
+    dec_list.append(num5)
+    
+    return binary_chromosome(dec_list)
+    
+
 
 def initialize():
     params = parameters()
@@ -50,7 +76,7 @@ def initialize():
         population.append(cover())
     
     for i in range(5):
-        params.avenues[i] = input("Enter avenue ", i+1, ": ")
+        params.avenues.append(input("Enter avenue : "))
     
     for i in range(5):
         temp_list = []
@@ -140,9 +166,9 @@ def run_ga():
     avg_fitness_list = []
     iteration_list = []
     
-    for i in range(1000):
+    for i in range(40):
         
-        mating_pool, avg_fitness = selection(population)
+        mating_pool, avg_fitness = selection(population, params, 50)
         avg_fitness_list.append(avg_fitness)
         iteration_list.append(i)
         
@@ -153,7 +179,14 @@ def run_ga():
             mutate(mating_pool)
         
         population = mating_pool
-        
-    plt.plot(avg_fitness_list, iteration_list)
-
+    
+    plt.plot(iteration_list, avg_fitness_list)
+    
+    best_member = population[0]
+    for member in population:
+        if fitness(member, params)>fitness(best_member, params):
+            best_member = member
+            
+    print(decimal_chromosome(best_member))
+    
 run_ga()
