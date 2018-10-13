@@ -38,5 +38,5 @@ Enter Complexity : 2
 
 [107.0, 34.0, 206.0, 92.0, 808.0]
 
-?
+![alt text](https://github.com/sarthak0120/GA-for-Portfolio-Management/blob/master/Sample%20plot.png)
 
