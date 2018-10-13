@@ -56,16 +56,16 @@ def initialize():
         temp_list = []
         for j in range(4):
             if j==0:
-                temp_list.append(int(input("Enter Risk (Avenue ", i+1, "): ")))
+                temp_list.append(int(input("Enter Risk : ")))
                 
             if j==1:
-                temp_list.append(int(input("Enter Return (Avenue ", i+1, "): ")))
+                temp_list.append(int(input("Enter Return : ")))
                 
             if j==2:
-                temp_list.append(int(input("Enter Liquidity (Avenue ", i+1, "): ")))
+                temp_list.append(int(input("Enter Liquidity : ")))
                 
             if j==3:
-                temp_list.append(int(input("Enter Complexity (Avenue ", i+1, "): ")))
+                temp_list.append(int(input("Enter Complexity : ")))
                 
         params.avenues_params.append(temp_list)
     return population, params
@@ -113,17 +113,27 @@ def selection(population, params, n):
     return mating_pool, fitness_sum/len(population)
         
         
-def crossover(mating_pool):
+#def crossover(mating_pool):
+#    
+#    temp_1 = np.random.randint(len(mating_pool))
+#    temp_2 = np.random.randint(len(mating_pool))
+#    
+#    parent_copy_1 = copy.deepcopy(mating_pool[temp_1])
+#    parent_copy_2 = copy.deepcopy(mating_pool[temp_2])
+#    
+#    crossover_point = np.random.randint(4)*10 + 10
+#    mating_pool[temp1]
     
-    temp_1 = np.random.randint(len(mating_pool))
-    temp_2 = np.random.randint(len(mating_pool))
-    
-    parent_copy_1 = copy.deepcopy(mating_pool[temp_1])
-    parent_copy_2 = copy.deepcopy(mating_pool[temp_2])
 
 def mutate(mating_pool):
-    pass
+    obj1_index = np.random.randint(len(mating_pool))
+    obj2_index = np.random.randint(len(mating_pool))    
+    
+    random_index = np.random.randint(len(mating_pool[0]))
+    
+    mating_pool[obj1_index][random_index], mating_pool[obj2_index][random_index] = mating_pool[obj2_index][random_index], mating_pool[obj1_index][random_index]
 
+    
 def run_ga():
     
     population, params = initialize()
@@ -136,8 +146,8 @@ def run_ga():
         avg_fitness_list.append(avg_fitness)
         iteration_list.append(i)
         
-        if np.random.rand()<params.crossover_rate:
-            crossover(mating_pool)
+#        if np.random.rand()<params.crossover_rate:
+#            crossover(mating_pool)
         
         if np.random.rand()<params.mutation_rate:
             mutate(mating_pool)
@@ -145,3 +155,5 @@ def run_ga():
         population = mating_pool
         
     plt.plot(avg_fitness_list, iteration_list)
+
+run_ga()
